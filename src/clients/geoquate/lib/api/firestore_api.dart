@@ -43,7 +43,7 @@ class FirestoreApi {
       final user = await usersCollection
           .doc(userId)
           .get()
-          .then((snapshot) => snapshot.data()!);
+          .then((snapshot) => snapshot.data());
 
       // final userDoc = await usersCollection.doc(userId).get();
       if (user == null) {

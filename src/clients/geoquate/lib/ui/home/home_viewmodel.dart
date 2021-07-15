@@ -8,7 +8,6 @@ import 'package:geoquate/models/application_models.dart';
 import 'package:geoquate/services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:stacked/stacked.dart';
 import 'dart:async';
 
@@ -24,7 +23,6 @@ class HomeViewModel extends BaseViewModel {
   double _pinPillPosition = -100;
   List<Marker> _markers = [];
   MarkerId? _selectedMarker;
-  BehaviorSubject<double> _radius = BehaviorSubject.seeded(100.0);
 
   PinInformation _currentlySelectedPin = PinInformation(
       pinPath: 'assets/custom-pin.png',
@@ -45,26 +43,14 @@ class HomeViewModel extends BaseViewModel {
 
   List<Marker> get markers => _markers;
 
-  MarkerId get selectedMarker => _selectedMarker ?? new MarkerId("");
-  set selectedMarker(MarkerId marker) {
-    _selectedMarker = marker;
-    notifyListeners();
-  }
+  MarkerId get selectedMarker => _selectedMarker ?? new MarkerId("default");
 
   final StreamController<List<DocumentSnapshot<Object?>>> _geoquateController =
       StreamController<List<DocumentSnapshot<Object?>>>.broadcast();
 
-  // BehaviorSubject<double> get radius => _radius;
-
-  // // firestore init
-  // final _firestore = FirebaseFirestore.instance;
-  // late Geoflutterfire geo;
-
   Stream<List<DocumentSnapshot>> get geoQuate => _geoquateController.stream;
 
   PinInformation get currentlySelectedPin => _currentlySelectedPin;
-  //Map markers
-
   Map<MarkerId, PinInformation> markerInfo = {};
 
   PinInformation defaultPin = PinInformation(
@@ -74,17 +60,6 @@ class HomeViewModel extends BaseViewModel {
       long: 0,
       locationName: '',
       labelColor: HexColor.toHex(Colors.grey));
-
-  void initialise() {
-    title = 'initialised';
-
-//     _geoquateService.eventStream.listen((event) {
-
-//     })
-
-// _geoquateService.searchEvents(40.0);
-    notifyListeners();
-  }
 
   int counter = 0;
   void updateTitle() {
@@ -143,7 +118,6 @@ class HomeViewModel extends BaseViewModel {
     var _marker = Marker(
       markerId: MarkerId(markerIdVal),
       position: LatLng(lat, lng),
-      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
       onTap: () {
         onMarkerTapped(markerId);
       },
@@ -173,7 +147,7 @@ class HomeViewModel extends BaseViewModel {
           markers.indexWhere((element) => element.markerId == previousMarkerId);
       final int newIndex =
           markers.indexWhere((element) => element.markerId == markerId);
-      if (previousMarkerId != null && oldIndex > 0) {
+      if (previousMarkerId != null && oldIndex >= 0) {
         final Marker resetOld = markers[oldIndex].copyWith(
             iconParam: BitmapDescriptor.defaultMarkerWithHue(
           BitmapDescriptor.hueViolet,
@@ -181,16 +155,17 @@ class HomeViewModel extends BaseViewModel {
         markers[oldIndex] = resetOld;
       }
       if (previousMarkerId != markerId) {
-        selectedMarker = markerId;
+        _selectedMarker = markerId;
         final Marker newMarker = tappedMarker.copyWith(
           iconParam: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueGreen,
           ),
         );
-        markers[newIndex] = newMarker;
         _currentlySelectedPin = markerInfo[markerId] ?? defaultPin;
+        markers[newIndex] = newMarker;
       } else {
         _currentlySelectedPin = defaultPin;
+        _selectedMarker = new MarkerId("default");
       }
     }
     notifyListeners();

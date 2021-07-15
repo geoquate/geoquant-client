@@ -14,7 +14,7 @@ class HomeView extends StatelessWidget {
         viewModelBuilder: () => HomeViewModel(),
         builder: (context, model, child) => Scaffold(
               appBar: AppBar(
-                title: const Text('GeoFlutterFire'),
+                title: const Text('GeoQuate Events'),
                 actions: <Widget>[
                   IconButton(
                     onPressed: () => model.showHome(),

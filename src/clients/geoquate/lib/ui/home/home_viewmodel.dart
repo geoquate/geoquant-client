@@ -168,30 +168,29 @@ class HomeViewModel extends BaseViewModel {
     final Marker? tappedMarker =
         markers.firstWhere((element) => element.markerId == markerId);
     if (tappedMarker != null) {
-      if (markerId == selectedMarker) {
-        _currentlySelectedPin = defaultPin;
-      } else {
-        final MarkerId? previousMarkerId = selectedMarker;
-        final int oldIndex = markers
-            .indexWhere((element) => element.markerId == previousMarkerId);
-        final int newIndex =
-            markers.indexWhere((element) => element.markerId == markerId);
-        if (previousMarkerId != null && oldIndex > 0) {
-          final Marker resetOld = markers[oldIndex].copyWith(
-              iconParam: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueViolet,
-          ));
-          markers[oldIndex] = resetOld;
-        }
+      final MarkerId? previousMarkerId = selectedMarker;
+      final int oldIndex =
+          markers.indexWhere((element) => element.markerId == previousMarkerId);
+      final int newIndex =
+          markers.indexWhere((element) => element.markerId == markerId);
+      if (previousMarkerId != null && oldIndex > 0) {
+        final Marker resetOld = markers[oldIndex].copyWith(
+            iconParam: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueViolet,
+        ));
+        markers[oldIndex] = resetOld;
+      }
+      if (previousMarkerId != markerId) {
         selectedMarker = markerId;
         final Marker newMarker = tappedMarker.copyWith(
           iconParam: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueGreen,
           ),
         );
-
-        _currentlySelectedPin = markerInfo[markerId] ?? defaultPin;
         markers[newIndex] = newMarker;
+        _currentlySelectedPin = markerInfo[markerId] ?? defaultPin;
+      } else {
+        _currentlySelectedPin = defaultPin;
       }
     }
     notifyListeners();

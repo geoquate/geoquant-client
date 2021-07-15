@@ -1,0 +1,6 @@
+src/clients/geoquate/android/app/google-services.json
+src/clients/geoquate/ios/Runner/GoogleService-Info.plist
+src/clients/geoquate/.env
+src/clients/geoquate/android/local.properties
+
+.DS_Store

@@ -9,64 +9,55 @@ import { makeStyles } from "@material-ui/core/styles";
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
 import routes from "routes.js";
 
 import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
 
-import bgImage from "assets/img/sidebar-2.jpg";
+import bgImage from "assets/img/sidebar-5.jpg";
 import logo from "assets/img/reactlogo.png";
 
-import { IfFirebaseAuthed, IfFirebaseUnAuthed } from "@react-firebase/auth";
+import {
+  FirebaseAuthProvider,
+  IfFirebaseAuthed,
+  IfFirebaseUnAuthed,
+} from "@react-firebase/auth";
+import firebase from "firebase";
+import { config } from "../config";
 
 let ps;
 
 const switchRoutes = (
-  <>
-    <IfFirebaseAuthed>
-      {() => {
-        return (
-          <Switch>
-            {routes.map((prop, key) => {
-              if (prop.layout === "/admin") {
-                return (
-                  <Route
-                    path={prop.layout + prop.path}
-                    component={prop.component}
-                    key={key}
-                  />
-                );
-              }
-              return null;
-            })}
-            <Redirect from="/admin" to="/admin/dashboard" />
-          </Switch>
-        );
-      }}
-    </IfFirebaseAuthed>
-    <IfFirebaseUnAuthed>
-      {() => {
-        return (
-          <Switch>
-            {routes.map((prop, key) => {
-              if (prop.layout === "/admin") {
-                return (
-                  <Route
-                    path={prop.layout + prop.path}
-                    component={prop.component}
-                    key={key}
-                  />
-                );
-              }
-              return null;
-            })}
-            <Redirect from="/admin" to="/admin/home" />
-          </Switch>
-        );
-      }}
-    </IfFirebaseUnAuthed>
-  </>
+  <FirebaseAuthProvider {...config} firebase={firebase}>
+    <>
+      <IfFirebaseAuthed>
+        {() => {
+          return (
+            <Switch>
+              {routes.map((prop, key) => {
+                if (prop.layout === "/admin") {
+                  return (
+                    <Route
+                      path={prop.layout + prop.path}
+                      component={prop.component}
+                      key={key}
+                    />
+                  );
+                }
+                return null;
+              })}
+              <Redirect from="/admin" to="/admin/dashboard" />
+            </Switch>
+          );
+        }}
+      </IfFirebaseAuthed>
+      <IfFirebaseUnAuthed>
+        {() => {
+          return <div>you dont have access</div>;
+        }}
+      </IfFirebaseUnAuthed>
+    </>
+  </FirebaseAuthProvider>
 );
 
 const useStyles = makeStyles(styles);
@@ -77,23 +68,20 @@ export default function Admin({ ...rest }) {
   // ref to help us initialize PerfectScrollbar on windows devices
   const mainPanel = React.createRef();
   // states and functions
-  const [image, setImage] = React.useState(bgImage);
-  const [color, setColor] = React.useState("blue");
-  const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const handleImageClick = (image) => {
-    setImage(image);
-  };
-  const handleColorClick = (color) => {
-    setColor(color);
-  };
-  const handleFixedClick = () => {
-    if (fixedClasses === "dropdown") {
-      setFixedClasses("dropdown show");
-    } else {
-      setFixedClasses("dropdown");
-    }
-  };
+  // const handleImageClick = (image) => {
+  //   setImage(image);
+  // };
+  // const handleColorClick = (color) => {
+  //   setColor(color);
+  // };
+  // const handleFixedClick = () => {
+  //   if (fixedClasses === "dropdown") {
+  //     setFixedClasses("dropdown show");
+  //   } else {
+  //     setFixedClasses("dropdown");
+  //   }
+  // };
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -129,10 +117,10 @@ export default function Admin({ ...rest }) {
         routes={routes}
         logoText={"GeoQuate"}
         logo={logo}
-        image={image}
+        image={bgImage}
         handleDrawerToggle={handleDrawerToggle}
         open={mobileOpen}
-        color={color}
+        color={"red"}
         {...rest}
       />
       <div className={classes.mainPanel} ref={mainPanel}>
@@ -150,14 +138,6 @@ export default function Admin({ ...rest }) {
           <div className={classes.map}>{switchRoutes}</div>
         )}
         {getRoute() ? <Footer /> : null}
-        <FixedPlugin
-          handleImageClick={handleImageClick}
-          handleColorClick={handleColorClick}
-          bgColor={color}
-          bgImage={image}
-          handleFixedClick={handleFixedClick}
-          fixedClasses={fixedClasses}
-        />
       </div>
     </div>
   );

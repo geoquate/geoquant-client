@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -42,8 +43,6 @@ import {
 } from "@react-firebase/auth";
 import firebase from "firebase";
 import { config } from "../../config";
-
-import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(styles);
 

@@ -29,6 +29,7 @@ import { config } from "./config";
 
 // core components
 import Admin from "layouts/Admin.js";
+import Anonymous from "layouts/Anonymous.js";
 
 import "assets/css/material-dashboard-react.css?v=1.10.0";
 
@@ -39,12 +40,14 @@ export const App = () => {
         <IfFirebaseAuthed>
           {() => {
             return (
-              <BrowserRouter>
-                <Switch>
-                  <Route path="/admin" component={Admin} />
-                  <Redirect from="/" to="/admin/dashboard" />
-                </Switch>
-              </BrowserRouter>
+              <>
+                <BrowserRouter>
+                  <Switch>
+                    <Route path="/admin" component={Admin} />
+                    <Redirect from="/" to="/admin/dashboard" />
+                  </Switch>
+                </BrowserRouter>
+              </>
             );
           }}
         </IfFirebaseAuthed>
@@ -53,8 +56,8 @@ export const App = () => {
             return (
               <BrowserRouter>
                 <Switch>
-                  <Route path="/admin" component={Admin} />
-                  <Redirect from="/" to="/admin/home" />
+                  <Route path="/anonymous" component={Anonymous} />
+                  <Redirect from="/" to="/anonymous/home" />
                 </Switch>
               </BrowserRouter>
             );

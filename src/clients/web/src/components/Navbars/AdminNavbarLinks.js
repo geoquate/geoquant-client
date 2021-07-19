@@ -54,11 +54,12 @@ export default function AdminNavbarLinks() {
   };
 
   const handleGoToLogin = () => {
-    history.push("/admin/login");
+    history.push("/anonymous/login");
   };
 
-  const handleLogout = () => {
-    firebase.auth().signOut();
+  const handleLogout = async () => {
+    await firebase.auth().signOut();
+    history.push("/anonymous/home");
   };
 
   return (

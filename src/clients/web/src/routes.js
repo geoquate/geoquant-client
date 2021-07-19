@@ -43,7 +43,7 @@ const dashboardRoutes = [
     rtlName: "",
     icon: Home,
     component: HomePage,
-    layout: "/admin",
+    layout: "/anonymous",
     protected: false,
   },
   {
@@ -52,7 +52,7 @@ const dashboardRoutes = [
     rtlName: "",
     icon: Login,
     component: LoginPage,
-    layout: "/admin",
+    layout: "/anonymous",
     protected: false,
   },
   {

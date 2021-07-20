@@ -19,12 +19,8 @@ import React from "react";
 import { render } from "react-dom";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
-import {
-  FirebaseAuthProvider,
-  IfFirebaseAuthed,
-  IfFirebaseUnAuthed,
-} from "@react-firebase/auth";
-import firebase from "firebase";
+import { useSigninCheck, FirebaseAppProvider } from "reactfire";
+
 import { config } from "./config";
 
 // core components
@@ -33,38 +29,43 @@ import Anonymous from "layouts/Anonymous.js";
 
 import "assets/css/material-dashboard-react.css?v=1.10.0";
 
-export const App = () => {
+const LoggedIn = () => {
   return (
-    <FirebaseAuthProvider {...config} firebase={firebase}>
-      <div>
-        <IfFirebaseAuthed>
-          {() => {
-            return (
-              <>
-                <BrowserRouter>
-                  <Switch>
-                    <Route path="/admin" component={Admin} />
-                    <Redirect from="/" to="/admin/dashboard" />
-                  </Switch>
-                </BrowserRouter>
-              </>
-            );
-          }}
-        </IfFirebaseAuthed>
-        <IfFirebaseUnAuthed>
-          {() => {
-            return (
-              <BrowserRouter>
-                <Switch>
-                  <Route path="/anonymous" component={Anonymous} />
-                  <Redirect from="/" to="/anonymous/home" />
-                </Switch>
-              </BrowserRouter>
-            );
-          }}
-        </IfFirebaseUnAuthed>
-      </div>
-    </FirebaseAuthProvider>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/admin" component={Admin} />
+        <Redirect from="/" to="/admin/dashboard" />
+      </Switch>
+    </BrowserRouter>
   );
 };
-render(<App />, document.getElementById("root"));
+
+const Anon = () => {
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route path="/anonymous" component={Anonymous} />
+        <Redirect from="/" to="/anonymous/home" />
+      </Switch>
+    </BrowserRouter>
+  );
+};
+export const App = () => {
+  const { status, data: signInCheckResult } = useSigninCheck();
+
+  if (status === "loading") {
+    return <div>loading</div>;
+  }
+
+  if (signInCheckResult.signedIn === true) {
+    return <LoggedIn />;
+  } else {
+    return <Anon />;
+  }
+};
+render(
+  <FirebaseAppProvider firebaseConfig={config}>
+    <App />
+  </FirebaseAppProvider>,
+  document.getElementById("root")
+);

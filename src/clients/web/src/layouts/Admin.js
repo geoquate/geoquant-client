@@ -17,48 +17,9 @@ import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
 import bgImage from "assets/img/sidebar-5.jpg";
 import logo from "assets/img/reactlogo.png";
 
-import {
-  FirebaseAuthProvider,
-  IfFirebaseAuthed,
-  IfFirebaseUnAuthed,
-} from "@react-firebase/auth";
-import firebase from "firebase";
-import { config } from "../config";
+import { useSigninCheck } from "reactfire";
 
 let ps;
-
-const switchRoutes = (
-  <FirebaseAuthProvider {...config} firebase={firebase}>
-    <>
-      <IfFirebaseAuthed>
-        {() => {
-          return (
-            <Switch>
-              {routes.map((prop, key) => {
-                if (prop.layout === "/admin") {
-                  return (
-                    <Route
-                      path={prop.layout + prop.path}
-                      component={prop.component}
-                      key={key}
-                    />
-                  );
-                }
-                return null;
-              })}
-              <Redirect from="/admin" to="/admin/dashboard" />
-            </Switch>
-          );
-        }}
-      </IfFirebaseAuthed>
-      <IfFirebaseUnAuthed>
-        {() => {
-          return <div>you dont have access</div>;
-        }}
-      </IfFirebaseUnAuthed>
-    </>
-  </FirebaseAuthProvider>
-);
 
 const useStyles = makeStyles(styles);
 
@@ -111,6 +72,33 @@ export default function Admin({ ...rest }) {
       window.removeEventListener("resize", resizeFunction);
     };
   }, [mainPanel]);
+
+  const { data: signInCheckResult } = useSigninCheck();
+
+  const renderAuthButton = () => {
+    if (signInCheckResult.signedIn === true) {
+      return (
+        <Switch>
+          {routes.map((prop, key) => {
+            if (prop.layout === "/admin") {
+              return (
+                <Route
+                  path={prop.layout + prop.path}
+                  component={prop.component}
+                  key={key}
+                />
+              );
+            }
+            return null;
+          })}
+          <Redirect from="/admin" to="/admin/dashboard" />
+        </Switch>
+      );
+    } else {
+      return <div>you dont have access</div>;
+    }
+  };
+
   return (
     <div className={classes.wrapper}>
       <Sidebar
@@ -132,10 +120,10 @@ export default function Admin({ ...rest }) {
         {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
         {getRoute() ? (
           <div className={classes.content}>
-            <div className={classes.container}>{switchRoutes}</div>
+            <div className={classes.container}>{renderAuthButton()}</div>
           </div>
         ) : (
-          <div className={classes.map}>{switchRoutes}</div>
+          <div className={classes.map}>{renderAuthButton()}</div>
         )}
         {getRoute() ? <Footer /> : null}
       </div>

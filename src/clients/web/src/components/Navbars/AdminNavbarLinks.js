@@ -20,15 +20,12 @@ import { useHistory } from "react-router-dom";
 
 import styles from "assets/jss/material-dashboard-react/components/headerLinksStyle.js";
 
-import { IfFirebaseAuthed, IfFirebaseUnAuthed } from "@react-firebase/auth";
-
+import { useSigninCheck } from "reactfire";
 import firebase from "firebase";
 
 const useStyles = makeStyles(styles);
 
 export default function AdminNavbarLinks() {
-  const history = useHistory();
-
   const classes = useStyles();
   const [openNotification, setOpenNotification] = React.useState(null);
   const [openProfile, setOpenProfile] = React.useState(null);
@@ -60,6 +57,42 @@ export default function AdminNavbarLinks() {
   const handleLogout = async () => {
     await firebase.auth().signOut();
     history.push("/anonymous/home");
+  };
+  const { data: signInCheckResult } = useSigninCheck();
+  const history = useHistory();
+
+  const renderAuthButton = () => {
+    if (signInCheckResult.signedIn === true) {
+      return (
+        <>
+          <MenuItem
+            onClick={() => {
+              history.push("/admin/profile");
+              handleCloseProfile();
+            }}
+            className={classes.dropdownItem}
+          >
+            Profile
+          </MenuItem>
+          <MenuItem
+            onClick={handleCloseProfile}
+            className={classes.dropdownItem}
+          >
+            Settings
+          </MenuItem>
+          <Divider light />
+          <MenuItem onClick={handleLogout} className={classes.dropdownItem}>
+            Logout
+          </MenuItem>
+        </>
+      );
+    } else {
+      return (
+        <MenuItem onClick={handleGoToLogin} className={classes.dropdownItem}>
+          Login
+        </MenuItem>
+      );
+    }
   };
 
   return (
@@ -179,45 +212,7 @@ export default function AdminNavbarLinks() {
             >
               <Paper>
                 <ClickAwayListener onClickAway={handleCloseProfile}>
-                  <MenuList role="menu">
-                    <MenuItem
-                      onClick={handleCloseProfile}
-                      className={classes.dropdownItem}
-                    >
-                      Profile
-                    </MenuItem>
-                    <MenuItem
-                      onClick={handleCloseProfile}
-                      className={classes.dropdownItem}
-                    >
-                      Settings
-                    </MenuItem>
-                    <Divider light />
-                    <IfFirebaseAuthed>
-                      {() => {
-                        return (
-                          <MenuItem
-                            onClick={handleLogout}
-                            className={classes.dropdownItem}
-                          >
-                            Logout
-                          </MenuItem>
-                        );
-                      }}
-                    </IfFirebaseAuthed>
-                    <IfFirebaseUnAuthed>
-                      {() => {
-                        return (
-                          <MenuItem
-                            onClick={handleGoToLogin}
-                            className={classes.dropdownItem}
-                          >
-                            Login
-                          </MenuItem>
-                        );
-                      }}
-                    </IfFirebaseUnAuthed>
-                  </MenuList>
+                  <MenuList role="menu">{renderAuthButton()}</MenuList>
                 </ClickAwayListener>
               </Paper>
             </Grow>

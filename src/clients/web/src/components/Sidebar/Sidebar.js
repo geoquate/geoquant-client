@@ -17,13 +17,7 @@ import RTLNavbarLinks from "components/Navbars/RTLNavbarLinks.js";
 
 import styles from "assets/jss/material-dashboard-react/components/sidebarStyle.js";
 
-import {
-  FirebaseAuthProvider,
-  IfFirebaseAuthed,
-  IfFirebaseUnAuthed,
-} from "@react-firebase/auth";
-import firebase from "firebase";
-import { config } from "../../config";
+import { useSigninCheck } from "reactfire";
 
 const useStyles = makeStyles(styles);
 
@@ -31,180 +25,72 @@ export default function Sidebar(props) {
   const classes = useStyles();
   let location = useLocation();
   // verifies if routeName is the one active (in browser input)
+  const { data: signInCheckResult } = useSigninCheck();
+
   function activeRoute(routeName) {
     return location.pathname === routeName;
   }
   const { color, logo, image, logoText, routes } = props;
-  var links = (
-    <div>
-      <FirebaseAuthProvider {...config} firebase={firebase}>
-        <div>
-          <IfFirebaseAuthed>
-            {() => {
-              return (
-                <List className={classes.list}>
-                  {routes
-                    .filter((route) => route.protected == true)
-                    .map((prop, key) => {
-                      var activePro = " ";
-                      var listItemClasses;
-                      if (prop.path === "/upgrade-to-pro") {
-                        activePro = classes.activePro + " ";
-                        listItemClasses = classNames({
-                          [" " + classes[color]]: true,
-                        });
-                      } else {
-                        listItemClasses = classNames({
-                          [" " + classes[color]]: activeRoute(
-                            prop.layout + prop.path
-                          ),
-                        });
-                      }
-                      const whiteFontClasses = classNames({
-                        [" " + classes.whiteFont]: activeRoute(
-                          prop.layout + prop.path
-                        ),
-                      });
-                      return (
-                        <NavLink
-                          to={prop.layout + prop.path}
-                          className={activePro + classes.item}
-                          activeClassName="active"
-                          key={key}
-                        >
-                          <ListItem
-                            button
-                            className={classes.itemLink + listItemClasses}
-                          >
-                            {typeof prop.icon === "string" ? (
-                              <Icon
-                                className={classNames(
-                                  classes.itemIcon,
-                                  whiteFontClasses,
-                                  {
-                                    [classes.itemIconRTL]: props.rtlActive,
-                                  }
-                                )}
-                              >
-                                {prop.icon}
-                              </Icon>
-                            ) : (
-                              <prop.icon
-                                className={classNames(
-                                  classes.itemIcon,
-                                  whiteFontClasses,
-                                  {
-                                    [classes.itemIconRTL]: props.rtlActive,
-                                  }
-                                )}
-                              />
-                            )}
-                            <ListItemText
-                              primary={
-                                props.rtlActive ? prop.rtlName : prop.name
-                              }
-                              className={classNames(
-                                classes.itemText,
-                                whiteFontClasses,
-                                {
-                                  [classes.itemTextRTL]: props.rtlActive,
-                                }
-                              )}
-                              disableTypography={true}
-                            />
-                          </ListItem>
-                        </NavLink>
-                      );
+
+  const renderLinks = () => {
+    return (
+      <List className={classes.list}>
+        {routes
+          .filter((route) => route.protected == signInCheckResult.signedIn)
+          .map((prop, key) => {
+            var activePro = " ";
+            const listItemClasses = classNames({
+              [" " + classes[color]]: activeRoute(prop.layout + prop.path),
+            });
+            const whiteFontClasses = classNames({
+              [" " + classes.whiteFont]: activeRoute(prop.layout + prop.path),
+            });
+            return (
+              <NavLink
+                to={prop.layout + prop.path}
+                className={activePro + classes.item}
+                activeClassName="active"
+                key={key}
+              >
+                <ListItem button className={classes.itemLink + listItemClasses}>
+                  {typeof prop.icon === "string" ? (
+                    <Icon
+                      className={classNames(
+                        classes.itemIcon,
+                        whiteFontClasses,
+                        {
+                          [classes.itemIconRTL]: props.rtlActive,
+                        }
+                      )}
+                    >
+                      {prop.icon}
+                    </Icon>
+                  ) : (
+                    <prop.icon
+                      className={classNames(
+                        classes.itemIcon,
+                        whiteFontClasses,
+                        {
+                          [classes.itemIconRTL]: props.rtlActive,
+                        }
+                      )}
+                    />
+                  )}
+                  <ListItemText
+                    primary={props.rtlActive ? prop.rtlName : prop.name}
+                    className={classNames(classes.itemText, whiteFontClasses, {
+                      [classes.itemTextRTL]: props.rtlActive,
                     })}
-                </List>
-              );
-            }}
-          </IfFirebaseAuthed>
-          <IfFirebaseUnAuthed>
-            {() => {
-              return (
-                <List className={classes.list}>
-                  {routes
-                    .filter((route) => route.protected == false)
-                    .map((prop, key) => {
-                      var activePro = " ";
-                      var listItemClasses;
-                      if (prop.path === "/upgrade-to-pro") {
-                        activePro = classes.activePro + " ";
-                        listItemClasses = classNames({
-                          [" " + classes[color]]: true,
-                        });
-                      } else {
-                        listItemClasses = classNames({
-                          [" " + classes[color]]: activeRoute(
-                            prop.layout + prop.path
-                          ),
-                        });
-                      }
-                      const whiteFontClasses = classNames({
-                        [" " + classes.whiteFont]: activeRoute(
-                          prop.layout + prop.path
-                        ),
-                      });
-                      return (
-                        <NavLink
-                          to={prop.layout + prop.path}
-                          className={activePro + classes.item}
-                          activeClassName="active"
-                          key={key}
-                        >
-                          <ListItem
-                            button
-                            className={classes.itemLink + listItemClasses}
-                          >
-                            {typeof prop.icon === "string" ? (
-                              <Icon
-                                className={classNames(
-                                  classes.itemIcon,
-                                  whiteFontClasses,
-                                  {
-                                    [classes.itemIconRTL]: props.rtlActive,
-                                  }
-                                )}
-                              >
-                                {prop.icon}
-                              </Icon>
-                            ) : (
-                              <prop.icon
-                                className={classNames(
-                                  classes.itemIcon,
-                                  whiteFontClasses,
-                                  {
-                                    [classes.itemIconRTL]: props.rtlActive,
-                                  }
-                                )}
-                              />
-                            )}
-                            <ListItemText
-                              primary={
-                                props.rtlActive ? prop.rtlName : prop.name
-                              }
-                              className={classNames(
-                                classes.itemText,
-                                whiteFontClasses,
-                                {
-                                  [classes.itemTextRTL]: props.rtlActive,
-                                }
-                              )}
-                              disableTypography={true}
-                            />
-                          </ListItem>
-                        </NavLink>
-                      );
-                    })}
-                </List>
-              );
-            }}
-          </IfFirebaseUnAuthed>
-        </div>
-      </FirebaseAuthProvider>
-    </div>
-  );
+                    disableTypography={true}
+                  />
+                </ListItem>
+              </NavLink>
+            );
+          })}
+      </List>
+    );
+  };
+
   var brand = (
     <div className={classes.logo}>
       <a
@@ -241,7 +127,7 @@ export default function Sidebar(props) {
           {brand}
           <div className={classes.sidebarWrapper}>
             {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks />}
-            {links}
+            {renderLinks()}
           </div>
           {image !== undefined ? (
             <div
@@ -263,7 +149,7 @@ export default function Sidebar(props) {
           }}
         >
           {brand}
-          <div className={classes.sidebarWrapper}>{links}</div>
+          <div className={classes.sidebarWrapper}>{renderLinks()}</div>
           {image !== undefined ? (
             <div
               className={classes.background}

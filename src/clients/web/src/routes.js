@@ -24,6 +24,7 @@ import LibraryBooks from "@material-ui/icons/LibraryBooks";
 import BubbleChart from "@material-ui/icons/BubbleChart";
 import LocationOn from "@material-ui/icons/LocationOn";
 import Notifications from "@material-ui/icons/Notifications";
+import Event from "@material-ui/icons/CalendarTodayOutlined";
 // core components/views for Admin layout
 import HomePage from "views/Home/Home.js";
 import LoginPage from "views/Login/Login.js";
@@ -33,6 +34,7 @@ import TableList from "views/TableList/TableList.js";
 import Typography from "views/Typography/Typography.js";
 import Icons from "views/Icons/Icons.js";
 import Maps from "views/Maps/Maps.js";
+import EventPage from "views/Event/Event.js";
 import NotificationsPage from "views/Notifications/Notifications.js";
 // core components/views for RTL layout
 
@@ -115,6 +117,15 @@ const dashboardRoutes = [
     rtlName: "",
     icon: Notifications,
     component: NotificationsPage,
+    layout: "/admin",
+    protected: true,
+  },
+  {
+    path: "/events",
+    name: "Events",
+    rtlName: "",
+    icon: Event,
+    component: EventPage,
     layout: "/admin",
     protected: true,
   },

@@ -16,6 +16,7 @@
 
 */
 import React from "react";
+import { RecoilRoot } from "recoil";
 import { render } from "react-dom";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
@@ -64,8 +65,10 @@ export const App = () => {
   }
 };
 render(
-  <FirebaseAppProvider firebaseConfig={config}>
-    <App />
-  </FirebaseAppProvider>,
+  <RecoilRoot>
+    <FirebaseAppProvider firebaseConfig={config}>
+      <App />
+    </FirebaseAppProvider>
+  </RecoilRoot>,
   document.getElementById("root")
 );
